@@ -22,6 +22,7 @@
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "postversion": "git push && git push --tags",
+    "publish": "npm publish --access public",
     "version": "npm run format && git add -A src",
     "format": "npx prettier --write .",
     "lint": "npx prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
