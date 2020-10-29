@@ -21,16 +21,16 @@ export enum LogLevel {
 
 const cfg = {
   quiet: false,
-  defaultLevel: LogLevel.INFO
+  defaultLevel: LogLevel.INFO,
 }
 
-function logInternal(msg:string, ...args:any){
-  if(!cfg.quiet){
-    console.log(`[logger.internal] ${msg}`, args);
+function logInternal(msg: string, ...args: any) {
+  if (!cfg.quiet) {
+    console.log(`[logger.internal] ${msg}`, args)
   }
 }
 
-export type Level = LogLevel | string;
+export type Level = LogLevel | string
 
 const nameToLevel: { [name: string]: LogLevel } = {
   trace: LogLevel.TRACE,
@@ -40,44 +40,44 @@ const nameToLevel: { [name: string]: LogLevel } = {
   error: LogLevel.ERROR,
   fatal: LogLevel.FATAL,
   off: LogLevel.OFF,
-};
+}
 
 const levelToName = {
-  [LogLevel.TRACE]: "TRACE",
-  [LogLevel.DEBUG]: "DEBUG",
-  [LogLevel.WARN]: " WARN",
-  [LogLevel.INFO]: " INFO",
-  [LogLevel.ERROR]: "ERROR",
-  [LogLevel.FATAL]: "FATAL",
-  [LogLevel.OFF]: "  OFF",
-};
+  [LogLevel.TRACE]: 'TRACE',
+  [LogLevel.DEBUG]: 'DEBUG',
+  [LogLevel.WARN]: ' WARN',
+  [LogLevel.INFO]: ' INFO',
+  [LogLevel.ERROR]: 'ERROR',
+  [LogLevel.FATAL]: 'FATAL',
+  [LogLevel.OFF]: '  OFF',
+}
 
 function convertLevelToName(level: Level): string {
-  if (typeof level === "string") {
-    return level;
+  if (typeof level === 'string') {
+    return level
   }
-  return levelToName[level];
+  return levelToName[level]
 }
 
 function parseLevel(
   levelName: string,
-  defaultLevel: LogLevel = cfg.defaultLevel,
+  defaultLevel: LogLevel = cfg.defaultLevel
 ): LogLevel {
-  return nameToLevel[(levelName || "").toLowerCase()] || defaultLevel;
+  return nameToLevel[(levelName || '').toLowerCase()] || defaultLevel
 }
 
-const processLogLevel = process.env.VUE_APP_LOG_LEVEL ||
-  process.env.APP_LOG_LEVEL;
+const processLogLevel =
+  process.env.VUE_APP_LOG_LEVEL || process.env.APP_LOG_LEVEL
 
-if(processLogLevel){
+if (processLogLevel) {
   cfg.defaultLevel = parseLevel(processLogLevel)
 }
 
-export function setLogOptions(opts:{level?:string, quiet?:boolean}){
-  if(opts.quiet != undefined){
+export function setLogOptions(opts: { level?: string; quiet?: boolean }) {
+  if (opts.quiet != undefined) {
     cfg.quiet = opts.quiet
   }
-  if(opts.level != undefined){
+  if (opts.level != undefined) {
     cfg.defaultLevel = parseLevel(opts.level)
   }
 }
@@ -86,115 +86,112 @@ class LogContext {
   public data: any[] = []
   logString = ''
 
-  push(info:any){
+  push(info: any) {
     this.data.push(info)
     this.updateLogString()
   }
 
-  pop(info:any){
-    this.data = this.data.filter(obj => obj !== info)
+  pop(info: any) {
+    this.data = this.data.filter((obj) => obj !== info)
     this.updateLogString()
   }
 
-  private updateLogString(){
-    this.logString = this.data.map(obj => `${obj}`).join()    
+  private updateLogString() {
+    this.logString = this.data.map((obj) => `${obj}`).join()
   }
 
-  hasItems(){
+  hasItems() {
     return this.data.length > 0
   }
 
-  toLogString(){
+  toLogString() {
     return this.logString
   }
-  
 }
 
 let logCtxt = new LogContext()
 
-export function logContext(ctxt:any, func:Function){
+export function logContext(ctxt: any, func: Function) {
   try {
     pushContext(ctxt)
     func()
-  }
-  finally {
+  } finally {
     popContext(ctxt)
   }
 }
 
-export function pushContext(ctxt:any){
+export function pushContext(ctxt: any) {
   logCtxt.push(ctxt)
 }
 
-export function popContext(ctxt:any){
+export function popContext(ctxt: any) {
   logCtxt.pop(ctxt)
 }
 
-
 export interface Logger {
-  level: Level;
-  isOff(): boolean;
-  isEnabled(): boolean;
-  isTraceEnabled(): boolean;
-  isDebugEnabled(): boolean;
-  isInfoEnabled(): boolean;
-  isWarnEnabled(): boolean;
-  isErrorEnabled(): boolean;
-  isFatalEnabled(): boolean;
-  isLevelEnabled(level: LogLevel): boolean;
+  level: Level
+  isOff(): boolean
+  isEnabled(): boolean
+  isTraceEnabled(): boolean
+  isDebugEnabled(): boolean
+  isInfoEnabled(): boolean
+  isWarnEnabled(): boolean
+  isErrorEnabled(): boolean
+  isFatalEnabled(): boolean
+  isLevelEnabled(level: LogLevel): boolean
 
-  trace(msg: any, ...args: any[]): void;
-  debug(msg: any, ...args: any[]): void;
-  info(msg: any, ...args: any[]): void;
-  warn(msg: any, ...args: any[]): void;
-  error(msg: any, ...args: any[]): void;
-  fatal(msg: any, ...args: any[]): void;
+  trace(msg: any, ...args: any[]): void
+  debug(msg: any, ...args: any[]): void
+  info(msg: any, ...args: any[]): void
+  warn(msg: any, ...args: any[]): void
+  error(msg: any, ...args: any[]): void
+  fatal(msg: any, ...args: any[]): void
 
-  log(level: LogLevel, msg: string, ...args: any[]): void;
-  getLogger(childName: string): Logger;
+  log(level: LogLevel, msg: string, ...args: any[]): void
+  getLogger(childName: string): Logger
 }
 
 export interface LogFormatter {
-  format(event: LogEvent, logCtxt: LogContext): string;
+  format(event: LogEvent, logCtxt: LogContext): string
 }
 
 export interface LogAppender {
-  append(event: LogEvent, logCtxt: LogContext): void;
+  append(event: LogEvent, logCtxt: LogContext): void
 }
 
 class SimpleLogFormatter implements LogFormatter {
-  format(event: LogEvent, logContext:LogContext): string {
-    const levelName = levelToName[event.level];
+  format(event: LogEvent, logContext: LogContext): string {
+    const levelName = levelToName[event.level]
     const parts: string[] = [`[${levelName}]`]
-        
-    if(logContext.hasItems()){
+
+    if (logContext.hasItems()) {
       parts.push(` [${logContext.logString}]`)
-    }     
-    if(event.tags){
+    }
+    if (event.tags) {
       parts.push(` [${event.tags.join(' ')}]`)
-    }     
-    parts.push(` ${event.logName} - ${event.msg}`)        
+    }
+    parts.push(` ${event.logName} - ${event.msg}`)
     return parts.join('')
   }
 }
 
 class ConsoleLogAppender implements LogAppender {
-  private formatter: LogFormatter;
+  private formatter: LogFormatter
 
   constructor(formatter: LogFormatter) {
-    this.formatter = formatter;
+    this.formatter = formatter
   }
 
-  append(event: LogEvent, logCtxt:LogContext): void {
-    const line = this.formatter.format(event, logCtxt);
+  append(event: LogEvent, logCtxt: LogContext): void {
+    const line = this.formatter.format(event, logCtxt)
 
     let log = console.log
     if (event.level <= LogLevel.DEBUG) {
-      log = captureConsole ? consolDebug : console.log;
+      log = captureConsole ? consolDebug : console.log
     } else if (event.level == LogLevel.INFO) {
-      log = captureConsole ? consoleInfo : console.info;
+      log = captureConsole ? consoleInfo : console.info
     } else if (event.level == LogLevel.WARN) {
-      log = captureConsole ? consoleWarn : console.warn;
+      log = captureConsole ? consoleWarn : console.warn
     } else {
       //TODO:generate a stacktrace without the logger code stack
       log = captureConsole ? consoleError : console.error
@@ -202,41 +199,40 @@ class ConsoleLogAppender implements LogAppender {
 
     log(line, ...event.args)
   }
-  
 }
 
 export interface LogEvent {
-  logName: string;
-  level: LogLevel;
-  msg: string;
-  args: any[];
+  logName: string
+  level: LogLevel
+  msg: string
+  args: any[]
   tags?: string[]
 }
 
 class LoggerImpl implements Logger {
-  private name: string;
-  _level: LogLevel | null;
-  private parent: LoggerImpl | null;
-  private appender: LogAppender | null;
+  private name: string
+  _level: LogLevel | null
+  private parent: LoggerImpl | null
+  private appender: LogAppender | null
   private tags: string[] | undefined
 
   constructor(
     name: string,
     level: LogLevel | null,
     appender: LogAppender | null,
-    parent: LoggerImpl | null,
+    parent: LoggerImpl | null
   ) {
-    this.name = name;
-    this._level = level;
-    this.parent = parent;
-    this.appender = appender;
+    this.name = name
+    this._level = level
+    this.parent = parent
+    this.appender = appender
   }
 
   set level(level: Level) {
-    if (typeof level === "string") {
-      level = parseLevel(level);
+    if (typeof level === 'string') {
+      level = parseLevel(level)
     }
-    this._level = level;
+    this._level = level
   }
 
   get level(): Level {
@@ -244,52 +240,52 @@ class LoggerImpl implements Logger {
       ? this._level
       : this.parent
       ? this.parent.level
-      : LogLevel.OFF;
+      : LogLevel.OFF
   }
   isTraceEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.TRACE);
+    return this.isLevelEnabled(LogLevel.TRACE)
   }
   isDebugEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.DEBUG);
+    return this.isLevelEnabled(LogLevel.DEBUG)
   }
   isInfoEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.INFO);
+    return this.isLevelEnabled(LogLevel.INFO)
   }
   isWarnEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.WARN);
+    return this.isLevelEnabled(LogLevel.WARN)
   }
   isErrorEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.ERROR);
+    return this.isLevelEnabled(LogLevel.ERROR)
   }
   isFatalEnabled(): boolean {
-    return this.isLevelEnabled(LogLevel.FATAL);
+    return this.isLevelEnabled(LogLevel.FATAL)
   }
   isOff(): boolean {
-    return this.isLevelEnabled(LogLevel.OFF);
+    return this.isLevelEnabled(LogLevel.OFF)
   }
   isEnabled(): boolean {
-    return !this.isOff;
+    return !this.isOff
   }
   isLevelEnabled(level: LogLevel): boolean {
-    return this.level <= level;
+    return this.level <= level
   }
   trace(msg: any, ...args: any[]) {
-    this.log(LogLevel.TRACE, msg, args);
+    this.log(LogLevel.TRACE, msg, args)
   }
   debug(msg: any, ...args: any[]) {
-    this.log(LogLevel.DEBUG, msg, args);
+    this.log(LogLevel.DEBUG, msg, args)
   }
   info(msg: any, ...args: any[]) {
-    this.log(LogLevel.INFO, msg, args);
+    this.log(LogLevel.INFO, msg, args)
   }
   warn(msg: any, ...args: any[]) {
-    this.log(LogLevel.WARN, msg, args);
+    this.log(LogLevel.WARN, msg, args)
   }
   error(msg: any, ...args: any[]) {
-    this.log(LogLevel.ERROR, msg, args);
+    this.log(LogLevel.ERROR, msg, args)
   }
   fatal(msg: any, ...args: any[]) {
-    this.log(LogLevel.FATAL, msg, args);
+    this.log(LogLevel.FATAL, msg, args)
   }
 
   log(level: LogLevel, msg: string, ...args: any[]): void {
@@ -299,15 +295,18 @@ class LoggerImpl implements Logger {
         msg: msg,
         args: args,
         level: level,
-        tags: this.tags
-      });
+        tags: this.tags,
+      })
     }
   }
 
   private logChildEvent(childLogEvent: LogEvent): void {
     let logEvent = childLogEvent
-    if(this.tags){
-        logEvent= {...logEvent, tags: logEvent.tags?[...this.tags, ...logEvent.tags] : this.tags }
+    if (this.tags) {
+      logEvent = {
+        ...logEvent,
+        tags: logEvent.tags ? [...this.tags, ...logEvent.tags] : this.tags,
+      }
     }
     this.logEvent(logEvent)
   }
@@ -315,12 +314,12 @@ class LoggerImpl implements Logger {
   private logEvent(logEvent: LogEvent): void {
     if (this.appender) {
       try {
-        this.appender.append(logEvent, logCtxt);
+        this.appender.append(logEvent, logCtxt)
       } catch (err) {
-        logInternal("Error invoking appender", { cause: err });
+        logInternal('Error invoking appender', { cause: err })
       }
     } else if (this.parent) {
-      this.parent.logChildEvent(logEvent);
+      this.parent.logChildEvent(logEvent)
     }
   }
 
@@ -329,77 +328,75 @@ class LoggerImpl implements Logger {
       `${this.name}.${childName}`,
       /*level*/ null,
       /*appender*/ null,
-      this,
-    );
+      this
+    )
   }
 }
 
 export class LoggerFactory {
-  private DEFAULT_FORMATTER = new SimpleLogFormatter();
-  private DEFAULT_APPENDER = new ConsoleLogAppender(this.DEFAULT_FORMATTER);
-  private DEFAULT_LEVEL = cfg.defaultLevel;
-  private DEFAULT_NAME = "app";
+  private DEFAULT_FORMATTER = new SimpleLogFormatter()
+  private DEFAULT_APPENDER = new ConsoleLogAppender(this.DEFAULT_FORMATTER)
+  private DEFAULT_LEVEL = cfg.defaultLevel
+  private DEFAULT_NAME = 'app'
 
-  private _level: LogLevel = this.DEFAULT_LEVEL;
-  private _appender!: LogAppender | null;
-  private _rootName!: string | null;
+  private _level: LogLevel = this.DEFAULT_LEVEL
+  private _appender!: LogAppender | null
+  private _rootName!: string | null
 
   private rootLogger = new LoggerImpl(
     this._rootName || this.DEFAULT_NAME,
     this._level || this.DEFAULT_LEVEL,
     this._appender || this.DEFAULT_APPENDER,
-    null,
-  );
+    null
+  )
 
   set level(level: Level | undefined) {
-    const existing = this.rootLogger.level;
-    this.rootLogger.level = level || this.DEFAULT_LEVEL;
+    const existing = this.rootLogger.level
+    this.rootLogger.level = level || this.DEFAULT_LEVEL
     if (existing != this.rootLogger.level) {
       // need to read it after as an invalid level might result in defaults
       logInternal(
-        `Default log level changed from ${
-          convertLevelToName(existing)
-        } to ${convertLevelToName(this.rootLogger.level)}`,
-      );
+        `Default log level changed from ${convertLevelToName(
+          existing
+        )} to ${convertLevelToName(this.rootLogger.level)}`
+      )
     }
   }
 
   set rootName(name: string) {
-    this._rootName = name;
+    this._rootName = name
   }
 
   getLogger(name: string): Logger {
-    return this.rootLogger.getLogger(name);
+    return this.rootLogger.getLogger(name)
   }
 }
 
-let loggerFactory: LoggerFactory | undefined = undefined;
+let loggerFactory: LoggerFactory | undefined = undefined
 
 function getOrCreateLogFactory() {
   if (!loggerFactory) {
-    loggerFactory = new LoggerFactory();
-    logInternal(
-      `default log level is ${levelToName[cfg.defaultLevel]}`,
-    );
+    loggerFactory = new LoggerFactory()
+    logInternal(`default log level is ${levelToName[cfg.defaultLevel]}`)
   }
-  return loggerFactory;
+  return loggerFactory
 }
 
 export function getLogger(name: string): Logger {
-  return getOrCreateLogFactory().getLogger(name);
+  return getOrCreateLogFactory().getLogger(name)
 }
 
 export function setLogLevel(level?: string): void {
-  getOrCreateLogFactory().level = level;
-  levelSet = true;
+  getOrCreateLogFactory().level = level
+  levelSet = true
 }
 
-let levelSet = false;
+let levelSet = false
 export function setLogLevelIfUnset(level?: string): void {
   if (levelSet) {
-    return;
+    return
   }
-  setLogLevel(level);
+  setLogLevel(level)
 }
 
-export default getLogger;
+export default getLogger
