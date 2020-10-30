@@ -1,5 +1,5 @@
 {
-  "name": "@codemucker/ts-logging",
+  "name": "@codemucker/logging",
   "description": "A simple logging library which can be used in the browser, in node, in deno. Logging simple defers to the console",
   "license": "MIT",
   "version": "0.1.0",
@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:codemucker/codemucker-ts-logging.git"
+    "url": "git@github.com:codemucker/codemucker-js-logging.git"
   },
   "private": false,
   "main": "build/js/src/index.js",
@@ -29,7 +29,6 @@
     "clean": "rm -fR build && rm -fR node_modules/",
     "build": "tsc",
     "build-watch": "tsc --watch",
-    "test_jest": "npm run build && npx jest",
     "test": "npm run build && jest --verbose=true --detectOpenHandles --coverageDirectory build/jest-coverage",
     "test-watch": "watch 'npm run test' ./src/ ./test/"
   },
