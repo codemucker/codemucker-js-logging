@@ -1,6 +1,6 @@
 {
   "name": "@codemucker/logging",
-  "description": "A simple logging library which can be used in the browser, in node, in deno. Logging simple defers to the console",
+  "description": "A simple console logging library which can be used in the browser, in node, in deno.",
   "license": "MIT",
   "version": "0.1.0",
   "authors": [
