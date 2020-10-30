@@ -2,7 +2,7 @@
   "name": "@codemucker/logging",
   "description": "A simple console logging library which can be used in the browser, in node, in deno.",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     "Bert van Brakel"
   ],
