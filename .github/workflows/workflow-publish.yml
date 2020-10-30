@@ -1,4 +1,4 @@
-name: PublishToNPM 
+name: PublishToNPM
 
 on:
   release:
