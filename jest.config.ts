@@ -1,4 +1,7 @@
-module.exports = {
+import type {Config} from 'jest';
+
+const config: Config = {
+  verbose: true,
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
@@ -13,5 +16,7 @@ module.exports = {
     '@/(.*)': '<rootDir>/src/$1',
     '@test/(.*)': '<rootDir>/test/$1',
   },
-  testTimeout: 30000,
-}
+  testTimeout: 30000
+};
+
+export default config;

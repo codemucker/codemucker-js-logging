@@ -35,11 +35,13 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^26.0.15",
-    "jest": "^26.6.1",
-    "prettier": "2.1.2",
+    "@types/jest": "^29.2.3",
+    "@types/node": "18.11.9",
+    "jest": "^29.3.1",
+    "prettier": "^2.7.1",
     "shared-git-hooks": "^1.2.1",
-    "ts-jest": "^26.4.0",
-    "typescript": "~3.9.3"
+    "ts-jest": "^29.0.3",
+    "ts-node":"10.9.1",
+    "typescript": "^4.9.3"
   }
 }
