@@ -1,4 +1,4 @@
-import type {Config} from 'jest';
+import type { Config } from 'jest'
 
 const config: Config = {
   verbose: true,
@@ -16,7 +16,7 @@ const config: Config = {
     '@/(.*)': '<rootDir>/src/$1',
     '@test/(.*)': '<rootDir>/test/$1',
   },
-  testTimeout: 30000
-};
+  testTimeout: 30000,
+}
 
-export default config;
+export default config

@@ -19,19 +19,19 @@
   "types": "build/js/src/index.d.ts",
   "scripts": {
     "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm test && pnpm dlx run lint",
-    "preversion": "pnpm dlx run lint",
+    "prepublishOnly": "pnpm test && pnpm run lint",
+    "preversion": "pnpm run lint",
     "postversion": "git push && git push --tags",
-    "release": "pnpm dlx publish --access private",
-    "pre-commit": "pnpm dlx run format && pnpm dlx run lint && pnpm dlx run test",
-    "version": "pnpm dlx run format && git add -A src",
-    "format": "pnpm dlx prettier --write .",
-    "lint": "pnpm dlx prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "release": "pnpm publish --access private",
+    "pre-commit": "pnpm run format && pnpm run lint && pnpm run test",
+    "version": "pnpm run format && pnpm run lint && git add -A src",
+    "format": "prettier --write .",
+    "lint": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "clean": "rm -fR build/* && rm -fR node_modules/*",
     "build": "tsc",
-    "build-watch": "tsc --watch",
-    "test": "pnpm run build && pnpm dlx jest --verbose=true --detectOpenHandles --coverageDirectory build/jest-coverage",
-    "test-watch": "watch 'pnpm run test' ./src/ ./test/"
+    "build:watch": "tsc --watch",
+    "test": "pnpm run build && jest --verbose=true --detectOpenHandles --coverageDirectory build/jest-coverage",
+    "test:watch": "watch 'pnpm run test' ./src/ ./test/"
   },
   "dependencies": {},
   "devDependencies": {
@@ -41,7 +41,7 @@
     "prettier": "^2.7.1",
     "shared-git-hooks": "^1.2.1",
     "ts-jest": "^29.0.3",
-    "ts-node":"10.9.1",
+    "ts-node": "10.9.1",
     "typescript": "^4.9.3"
   }
 }
